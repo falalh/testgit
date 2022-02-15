@@ -1,0 +1,144 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+
+
+<h:body>
+	<ui:composition template="/index-rtl-ar.xhtml">
+		<ui:define name="content">
+			
+				<!-- Page Breadcrumb -->
+				<div class="page-breadcrumbs">
+					<ul class="breadcrumb">
+						<li><i class="fa fa-home"></i> <a href="#">لوحة التحكم</a></li>
+						<li class="active">الهيكل التنظيمي</li>
+					</ul>
+				</div>
+				<!-- /Page Breadcrumb -->
+			
+			
+				<!-- Page Body -->
+				<div class="page-body">
+
+					<div class="row">
+						
+						
+						<div class="col-lg-4 col-sm-6 col-xs-12">
+							  <div class="widget">
+                                        <div class="widget-header bg-skyblue" style="background:#2dc3e8 ">
+                                            <i class="widget-icon fa fa-arrow-left"></i>
+                                            <span class="widget-caption">الشركات</span>
+                                        </div><!--Widget Header-->
+                                        <div class="widget-body">
+                                           <h:form id="form" >
+
+
+    <div class="card crud-demo">
+        <p:growl id="messages" showDetail="true"/>
+
+        <p:toolbar>
+            <p:toolbarGroup align="center">
+                <p:commandButton value="اضافة" icon="pi pi-plus" actionListener="#{PositionController.openNew}"
+                                 update=":form:manage-Position-content" oncomplete="PF('managePositionDialog').show()"
+                                 styleClass="ui-button-success">
+                    <p:resetInput target=":form:manage-Position-content"/>
+                </p:commandButton>
+                
+               
+            </p:toolbarGroup>
+            <p:toolbarGroup align="right">
+                <p:commandButton id="delete-Positions-button" value="#{PositionController.deleteButtonMessage}"
+                                 icon="pi pi-trash" actionListener="#{PositionController.deleteSelectedPositions}"
+                                 styleClass="ui-button-danger" disabled="#{!PositionController.hasSelectedPositions()}"
+                                 update="@this">
+                    <p:confirm header="تأكيد" message="هل انت متأكد من حذف العناصر المحددة؟"
+                               icon="pi pi-exclamation-triangle"/>
+                </p:commandButton>
+            </p:toolbarGroup>
+        </p:toolbar>
+
+        <p:dataTable id="dt-Positions" widgetVar="dtPositions" dir="rtl"  var="Position" value="#{PositionController.Positions}"
+                     reflow="true" styleClass="Positions-table"
+                     selection="#{PositionController.selectedPositions}" rowKey="#{Position.id}" paginator="true"
+                     rows="12" rowSelectMode="add" paginatorPosition="bottom">
+            
+
+            <p:ajax event="rowSelect" update=":form:delete-Positions-button"/>
+            <p:ajax event="rowUnselect" update=":form:delete-Positions-button"/>
+            <p:ajax event="rowSelectCheckbox" update=":form:delete-Positions-button"/>
+            <p:ajax event="rowUnselectCheckbox" update=":form:delete-Positions-button"/>
+            <p:ajax event="toggleSelect" update=":form:delete-Positions-button"/>
+
+            <p:column width="16" selectionMode="multiple" exportable="false"></p:column>
+
+            <p:column headerText="الشركات" sortBy="#{Position.name}" filterStyle="" filterBy="#{Position.name}" >
+                <h:outputText value="#{Position.name}" dir="rtl" />
+            </p:column>
+          
+            <p:column exportable="false" width="60">
+                <p:commandButton icon="pi pi-pencil" update=":form:manage-Position-content"
+                                 oncomplete="PF('managePositionDialog').show()"
+                                 styleClass="edit-button rounded-button ui-button-success" process="@this">
+                    <f:setPropertyActionListener value="#{Position}" target="#{PositionController.selectedPosition}"/>
+                    <p:resetInput target=":form:manage-Position-content"/>
+                </p:commandButton>
+                <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash" process="@this"
+                                 oncomplete="PF('deletePositionDialog').show()" style="margin-right: .5rem">
+                    <f:setPropertyActionListener value="#{Position}"  target="#{PositionController.selectedPosition}"/>
+                </p:commandButton>
+            </p:column>
+
+        </p:dataTable>
+
+        <p:dialog header="تفاصيل الشركة" showEffect="fade" modal="true"
+                  widgetVar="managePositionDialog" responsive="true" width="500">
+            <p:outputPanel id="manage-Position-content" class="ui-fluid">
+                <p:outputPanel rendered="#{not empty PositionController.selectedPosition}">
+                    <div class="p-field">
+                        <p:outputLabel for="name">اسم الشركة</p:outputLabel>
+                        <p:inputText id="name" value="#{PositionController.selectedPosition.name}" required="true"/>
+                    </div>
+                   
+                </p:outputPanel>
+            </p:outputPanel>
+
+            <f:facet name="footer">
+                <p:commandButton value="حفظ" icon="pi pi-check" actionListener="#{PositionController.savePosition}"
+                                 update="manage-Position-content" process="manage-Position-content @this"/>
+                <p:commandButton value="الغاء" icon="pi pi-times" onclick="PF('managePositionDialog').hide()"
+                                 class="ui-button-secondary"/>
+            </f:facet>
+        </p:dialog>
+
+        <p:confirmDialog widgetVar="deletePositionDialog" showEffect="fade" width="500"
+                         message="هل انت متأكد من الحذف" header="تأكيد" severity="warn">
+            <p:commandButton value="نعم" icon="pi pi-check" actionListener="#{PositionController.deletePosition}"
+                             process="@this" oncomplete="PF('deletePositionDialog').hide()"/>
+            <p:commandButton value="لا" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                             onclick="PF('deletePositionDialog').hide()"/>
+        </p:confirmDialog>
+
+        <p:confirmDialog global="true" showEffect="fade" width="500">
+            <p:commandButton value="نعم" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+            <p:commandButton value="لا" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                             icon="pi pi-times"/>
+        </p:confirmDialog>
+    </div>
+</h:form>
+                                        </div><!--Widget Body-->
+                                    </div><!--Widget-->
+							
+						</div>
+					</div>
+				</div>
+				
+				<!-- /Page Content -->
+		
+
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
